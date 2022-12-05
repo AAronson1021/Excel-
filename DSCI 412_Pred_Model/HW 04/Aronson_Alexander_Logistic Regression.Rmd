@@ -1,0 +1,88 @@
+---
+title: "Logistic Regression"
+author: "Alex Aronson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### **Part 1**
+
+Suppose we collect data for a group of students in a statistics class with variables X1 = hours studied, X2 = undergrad GPA, and Y = receive an A. We ﬁt a logistic regression and produce estimated coeﬃcient, ˆβ0 = −6, ˆβ1 = 0.05, ˆβ2 = 1.
+
+**1. Estimate the probability that a student who studies for 40 hrs and has an undergrad GPA of 3.5 gets an A in the class.**
+
+  - Using what is given to plug into the formula = $\beta_0 + \beta_1X_1 +\beta_2X_2$, we get -6 + 0.05(40) + 1(3.5) = -0.05, on the right hand side of the equation. Since this is equation is the result of a log function our formula yields the $X\beta$ portion of the original logistic formula $p(X)= e^{x\beta}/1+e^{x\beta}$ where $x\beta$ is the result of the formula calculation. plugging in -0.05 we get a value. 0.3775 or roughly 37.8% probability of getting an A with defined parameters. 
+  
+**2. How many hours would the student in part 1 need to study to have a 50 % chance of getting an A in the class?**
+
+  - For this case we would work the problem like the previous, Just in reverse order so we know the left hand side of the equation to be .50, we get the formula $0.50=e^{x\beta}/1+e^{x\beta}$, multiplying across we have $0.50 + 0.50e^{x\beta}=e^{x\beta}$, simplifying the equation we have $0.50 = 0.50e^{x\beta}$, then taking the natural log to get rid of exponential  term $ln(0.50)=ln(e^{x\beta})$ ---->> which yield $x\beta=0$, setting equal to the original right hand side of the equation used in the first problem and solving for X1.. We get -6 + 0.05(X1) + 1(3.5)=0 ---->> 0.05(X1)= 6-3.5 ---->> X1 = 50 hours minimum to increase chance of A to 50%.
+  
+  
+### **Part 2**
+
+**1. Load this package by doing library(ISLR2). If this gives you an error, make sure you install the package by doing install.packages(“ISLR2”). To check that you have correctly loaded the package, do head(Weekly) and you should see the ﬁrst few rows of the Weekly dataset. For descriptions of this data, feel free to do Weekly in Rstudio.**
+
+```{R}
+library(ISLR2)
+head(Weekly)
+str(Weekly)
+```
+
+**2. Produce some numerical and graphical summaries of the Weekly data. State any insights or patterns you observed**
+
+```{R}
+summary(Weekly)
+```
+
+  -We see looking at the summary of each value that lag 1-5 do not differ very much from each other, with the major differences being mostly in the Mean and Median, and even so differing less than .01 Just by a quick visual comparison, therefore we will focus on and visualize "volume" and "year".
+  
+  
+```{R}
+library(ggplot2)
+ggplot(Weekly, aes(x=Year,y=Volume)) +ggtitle("Volume Over Time(Years)")+ geom_point() + geom_smooth(method="auto", se=TRUE, fullrange=FALSE, level=0.95)
+```
+
+  - The most simple conclusion we can draw from the data is that over time the volume of return week-to-week has increased, and also looking at the distribution of points about the fitted line, we can see a consistent increase over time, best described by a gamma function using the "auto" fit term to provide the best fit distribution based on the data presented at a confidence level of 95%.
+  
+  
+**3. Use the full data set to perform a logistic regression with Direction as the response and the ﬁve lag variables plus Volume as predictors**
+
+```{R}
+
+Mod1<- glm(Direction ~ Lag1 + Lag2 + Lag3 + Lag4 + Lag5 + Volume, data = Weekly, family = binomial)
+
+```
+
+
+**4. Use the summary function to print the results. Do any of the predictors appear to be statistically signiﬁcant? If so, which ones?**
+
+```{R}
+
+summary(Mod1)
+
+```
+
+   -We can see that the only predictor that seems to have significant effect of the response is lag 2 since its p-value is the only one under the significance value of $\alpha =0.05$ 
+
+
+
+**5. Compute the confusion matrix and overall fraction of correct predictions. Explain what the confusion matrix is telling you about the types of mistakes made by logistic regression.**
+
+```{R}
+library(dplyr)
+Weekly$prediction<- predict(Mod1, Weekly, type='response')
+head(Weekly)
+
+
+Weekly<- Weekly %>%
+  mutate(new = factor(ifelse(prediction > 0.5,"Up","Down")))
+head(Weekly,10)
+
+table(Weekly$Direction, Weekly$new)
+
+  
+```
+
+  - Looking at the main diagonal and adding the values then subtracting by the total of all values, we get the equation $Accuracy = (54+577)/1089$ with is roughly 56% accuracy of predictions on the set. Furthermore, when the market is going up $Accuracy = (557)/(48+557)$ meaning when the market is up the model is roughly 92% correct, but when the market goes down $Accuracy = (54)/(54+430)$ meaning the model is only roughly 11% accurate, making it not a very accurate model based on the entire data set. 
+
+

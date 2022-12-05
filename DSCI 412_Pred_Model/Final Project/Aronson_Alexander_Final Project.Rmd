@@ -1,0 +1,319 @@
+---
+title: "Final Project"
+author: "Alex Aronson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+```{R}
+# loading Required Libraries
+#install.packages("pacman")
+pacman::p_load(dplyr, ggplot2, factoextra, cluster, tree, randomForest)
+```
+
+
+**1. Data Preparation.**
+
+    a. Open an rmd and load the insurance.csv dataset.
+  
+    b. In the data frame, log transform the variable charges and name it as log_charges.
+  
+    c. Use the sample () function with set.seed equal to 1 to generate row indexes for your training and tests sets, with 70% of the row indexes for your training set and 30% for your test set. Do not use any method other than the sample () function for splitting your data.
+  
+
+```{R}
+##Part A##
+insurance<- read.csv("insurance.csv")
+#str(insurance): Suppressed, only used for checking inital structure
+head(insurance)
+insurance$sex<- as.factor(insurance$sex)
+insurance$smoker<- as.factor(insurance$smoker)
+insurance$region<- as.factor(insurance$region)
+#str(insurance): suppressed, only used for checking adjusted structure
+
+##Part B##
+
+insurance$log_charges<- log(insurance$charges)
+
+##Part C##
+
+set.seed(1) 
+index <-  sample(1:nrow(insurance), nrow(insurance)*0.70)
+train <- insurance[index,]
+test <- insurance[-index,]
+str(train)
+str(test)
+
+```
+
+
+**2. Build a multiple regression model**
+
+      a. Perform multiple linear regression with log_charges as the response and the predictors are age, sex, bmi, children, smoker, and region. Print out the results using the summary () function. Use the training data set you created in #1 above.
+  
+      b.Is there a relationship between the predictors and the response?
+  
+      c.Does sex have a statistically significant relationship to the response? 
+Compare the test error of the model in #2a. Report the RMSE.
+
+
+```{R}
+##Part A##
+
+
+
+model<- lm(log_charges~ age + sex + bmi + children + smoker + region, data = train)
+summary(model)
+
+##Part B#
+
+  # Looking at the summary of the training set linear model, we see that there is a relationship between the response and all predictors on a significance level of a = 0.05
+
+##Part C##
+
+  # Sex is still considered significant when compared to the a=0.05 significance level, however when compared to other predictors, it has the least significant effect on the decision of the model, so the best thing would be to remove it from the model and consider it insignificant when compared to the other more heavily weighted predictors. 
+
+```
+
+**3. Build a regression tree model.**
+
+    a. Build a regression tree model using function tree (), where log_charges is the response and the predictors are age, sex, bmi, children, smoker, and region. 
+  
+    b. Find the optimal tree and display the results in a graphic. Report the best size. 
+  
+    c. Justify the number you picked for the optimal tree with regard to the principle of the variance-bias trade-off. 
+  
+    d. Prune the tree using the optimal size found in 3.b.
+  
+    e. Plot the best tree model and give labels. 
+  
+    f. Calculate the best RMSE for the best model
+
+```{R}
+
+##Part A##
+
+suppressWarnings({tree_log.charges<- tree(log_charges~ age + sex + bmi + children + smoker + region,  data = train)
+summary(tree_log.charges)})
+
+##Part B##
+
+suppressWarnings({cv.insurance<- cv.tree(tree_log.charges)
+plot(cv.insurance$size, cv.insurance$dev, type='b')})
+# The best size is 4 based on the plot. #
+
+##Part C##
+ # I chose to use C as the size of choice based on the fact that the deviance doesn't change much between 4 and 5, so choosing the smallest of the two numbers would be the best option. 
+
+##Part D & E##
+
+prune.insurance<- prune.tree(tree_log.charges, best = 4)
+plot(prune.insurance)
+text(prune.insurance, pretty = 0)
+
+## Part F##
+
+yhat = predict(prune.insurance, newdata = test)
+insurance.test = test[, "log_charges"]
+mean((yhat-insurance.test)^2)
+
+```
+
+
+**4. Build a random forest model.**
+
+    a.Build a random forest model using function randomForest(), where log_charges is the response and the predictors are age, sex, bmi, children, smoker, and region.
+  
+    b.Compute the test error (using the test data set).
+  
+    c.Extract variable importance measure using the importance() function.
+    
+    d.Plot the variable importance using the function, varImpPlot(). Which are the top 3 important predictors in this model?
+  
+```{R}
+
+##Part A##
+
+rf.insurance<- randomForest(log_charges~ age + sex + bmi + children + smoker + region,  data = train)
+
+##Part B##
+
+yhat.rf<- predict(rf.insurance, newdata = test)
+insurance.test1 = test[, "log_charges"]
+mean((yhat.rf-insurance.test1)^2)
+     
+##Part C##
+
+importance(rf.insurance)
+
+##Part D##
+
+varImpPlot(rf.insurance)
+
+# The Three most important variables are smoker, age and bmi #
+
+```
+
+
+**5. Perform the k-means cluster analysis.**
+
+    a.Remove the sex, smoker, and region, since they are not numerical values.
+  
+    b.Determine the optimal number of clusters. Justify your answer.
+  
+    c.Perform k-means clustering using the optimal number of clusters from 5b.
+  
+    d.Visualize the clusters in different colors.
+  
+```{R}
+##Part A##
+
+insurance_new<- insurance %>% select(-c(sex, smoker, region))
+head(insurance_new)
+
+##Part B##
+
+set.seed(1)
+fviz_nbclust(insurance_new, kmeans, method = "gap_stat")
+# the optimal number of clusters is one based on the graph vertical dashed line #
+
+##Part c and D##
+
+km.res <- kmeans(insurance_new, 1, nstart = 25)
+fviz_cluster(km.res, data = insurance_new)
+
+```
+
+
+**6. Putting it all together.**
+
+```{R}
+
+##Part A##
+
+Model.Type<- c("Multiple Linear Regression", "Regression Tree", "Random Forest")
+Test.RMSE<- c(0.4246, 0.2508, 0.1855)
+df <- data.frame(Model.Type, Test.RMSE)
+print (df)
+
+```
+
+
+**Part A** 
+  
+  - 1. Based on the RMSE of the Multiple Linear Model, Regression Tree and the Random Forest Models, The lowest Residual Means Standard Error is Achieved from using the Random Forest model. I would recommend the Random Forest model based on the Fact it returns the lowest Test.RMSE. 
+  
+  - 2. I would recommend the Multiple Linear regression model because it is very flexible and can  be visualized using density plots, bar graphs, box and whisker plots, and scatter plots, all of which can have legends and colors applied to each predictor to show the differences in an easy to understand visual. The disadvantages are that the model does not use machine learning capabilities so anychanges that need to be made will have to made manually, whereas the other models automatically pick the optimum model from the beginning. 
+  
+  
+  
+**Part B**
+
+```{R}
+
+suppressWarnings({tree_charges<- tree(charges~ age + sex + bmi + children + smoker + region,  data = train)
+summary(tree_charges)})
+
+suppressWarnings({cv.insurance<- cv.tree(tree_charges)
+plot(cv.insurance$size, cv.insurance$dev, type='b')})
+
+prune.insurance_new<- prune.tree(tree_charges, best = 4)
+plot(prune.insurance_new)
+text(prune.insurance_new, pretty = 0)
+
+yhat = predict(prune.insurance_new, newdata = test)
+insurance.test = test[, "charges"]
+mean((yhat-insurance.test)^2)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,159 @@
+---
+title: "Bike Sharing"
+author: "Alex Aronson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{R}
+
+library(dplyr)
+library(ggplot2)
+library(tree)
+
+
+bike<- read.csv("Bike.csv")
+bike<- na.omit(bike)
+head(bike)
+str(bike)
+
+```
+
+
+**- Tree Model **
+
+```{R}
+
+# splitting data
+
+training<- bike %>% dplyr::sample_frac(0.667)
+dim(training)
+
+testing<- dplyr::anti_join(bike, training, by='count')
+dim(testing)
+
+```
+
+
+```{R}
+
+# Regression Tree
+suppressWarnings({tree_bike<- tree(count~., data=bike)
+summary(tree_bike)})
+
+# Cross-Validation Tree and Plotting
+suppressWarnings({cv.bike<- cv.tree(tree_bike)
+plot(cv.bike$size, cv.bike$dev, type='b')})
+
+```
+
+  - Size doesn't change much between 4, and 5, but especially not between 5 and 6. Therefore, I will choose 5 as the size of the tree fro further calculations. 
+  
+
+```{R}
+
+# pruning the new tree to size and plotting 
+
+prune.bike<- prune.tree(tree_bike, best = 5)
+plot(prune.bike)
+text(prune.bike, pretty = 0)
+
+```
+
+
+```{R}
+
+# running MSE calculation
+
+suppressWarnings({MSE<- predict(prune.bike, newdata = testing)
+bike.test<- testing[,"count"]
+
+mean((MSE-bike.test)^2)})
+
+```
+
+**- Random Forest**
+
+```{R}
+
+library(dplyr)
+library(ggplot2)
+library(randomForest)
+
+head(bike)
+str(bike)
+
+suppressWarnings({training<- bike %>% dplyr::sample_frac(0.667)
+dim(training)
+
+testing<- dplyr::anti_join(bike, training, by='count')
+dim(testing)
+
+rf.bike<- randomForest(count~., data = training, importance= TRUE )
+yhat.rf<- predict(rf.bike, newdata = testing)
+
+# MSE Calculation
+bike1.test<- testing[,"count"]
+mean((yhat.rf-bike1.test)^2)})
+
+# Importance Measure and Variable Importance Plot
+
+importance(rf.bike)
+varImpPlot(rf.bike)
+
+```
+
+  - The top two predictors in this model are "Registered" and "Casual" 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

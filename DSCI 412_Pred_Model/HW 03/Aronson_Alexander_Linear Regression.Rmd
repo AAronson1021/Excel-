@@ -1,0 +1,144 @@
+---
+title: "Linear Regression"
+author: "Alex Aronson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+### **Part 1**
+
+ - Suppose we have a data set with five predictors, X1 = GPA, X2 = IQ, X3 = Level (1 for College and 0 for High School), X4 = Interaction between GPA and IQ, and X5 = Interaction between GPA and Level. The response is starting salary after graduation (in thousands of dollars). Suppose that we fitted a model and got the following coefficients: βˆ0 = 50, βˆ1 = 20, βˆ2 = 0.07, βˆ3 = 35, βˆ4 = 0.01, βˆ5 = −10.
+
+**1. Which answer is correct, and why?**
+
+  a.For a fixed value of IQ and GPA, high school graduates earn more, on average, than college graduates.
+
+  b.For a fixed value of IQ and GPA, college graduates earn more, on average, than high school graduates.
+
+  c.For a fixed value of IQ and GPA, high school graduates earn more, on average, than college graduates provided that the GPA is high enough.
+
+  d.For a fixed value of IQ and GPA, college graduates earn more, on average, than high school graduates provided that the GPA is high enough.
+
+  - The correct answer is C. When looking at least squares regression equations for both cases of levels (aka College or High school), we get equations
+  
+  $YHS = \beta_0 + \beta_1X_1 + \beta_2X_2 +\beta_30 + \beta_4X_1X_2 +\beta_5X_10$
+  
+  and 
+  
+  $YCOL = \beta_0 + \beta_1X_1 + \beta_2X_2 +\beta_3X_3 + \beta_4X_1X_2 +\beta_5X_1X_3$
+  
+  - **X3 for YHS has a  value of 0 and for YCOL has a value of 1**
+
+We get the conclusion that college graduates make $35-10X_1$ more than high school graduates on average, however a higher gpa for college grads would mean a lower salary, so salary is conditional. 
+
+
+**2. Predict the salary of a college graduate with IQ of 110 and a GPA of 4.0**
+
+  - Using values given we get the equation:
+  
+  $Salary =50 + 20(4.0)+ 0.07(110)+35+0.01(110(4.0))-10(4)=137(thousands)$
+
+**3. True or false: Since the coefficient for the GPA/IQ interaction term is very small, there is very little evidence of an interaction effect. Justify your answer.**
+
+  - False, regardless of the size of the interaction coefficient, the effect is easily swayed due to its taking into account of two variables. Meaning little changes can have a big effect on the model itself. 
+  
+  
+
+### **Part 2**
+```{R}
+mtcars<- read.csv("mtcars.csv")
+head(mtcars)
+str(mtcars)
+```
+
+**1. Use the lm() function to perform a simple linear regression with the response mpg and the predictor hp.**
+
+```{R}
+LM1<- lm(mpg~hp, data=mtcars)
+summary(LM1)
+```
+
+**2. Is there a relationship between the target mpg and predictor hp?**
+
+  - Yes there is a relationship between the mpg and the hp of the vehicle
+  based on the P-values which is nearly 0. 
+  
+**3. How strong is the relationship between the response and predictor?**
+
+  - looking at the $R^2$ statistic we see that roughly 61 percent of the variability of mpg is based on hp alone.
+  
+**4. Is the relationship between mpg and hp positive or negative?**
+
+  - The relationship is negative due to the coefficent being negative, if we were to plug it in to exp(-0.064548)-1 = -0.063 roughly. Meaning for every horsepower increase there is a 0.063 mpg decrease. 
+  
+**5. What is the predicted mpg associated with a horsepower (hp) of 100?**
+
+```{R}
+predict(LM1, data.frame(hp=c(100)), interval= "confidence")
+
+predict(LM1, data.frame(hp =c(100)), interval= "prediction")
+```
+  - We can see that the predicted mpg for both the confidence interval and the prediction interval is roughly 23 mpg, however the intervals between the two differ.
+  
+  
+**6. Plot the response and the predictor and add the regression line using abline()**
+
+```{R}
+plot(mpg~hp, main= "MPG vs. Horsepower", xlab = "Horsepower", ylab="MPG",data=mtcars, pch =9)
+abline(coef = coef(LM1),lwd = 2, col= "green" )
+```
+
+  
+**7.Perform a multiple linear regression with mpg as the response and the predictors cyl, disp, hp, wt, vs, and gear. Print out the results using summary() function.**
+
+```{R}
+LM2<- lm(mpg~cyl + disp + hp + wt + vs + gear, data = mtcars)
+summary(LM2)
+```
+
+**8. Is there a relationship between the predictors and the response?**
+
+  - Yes there is a relationship between most of the predictors that should be considered having an effect on MPG. However, "vs" can be considered inaccurate because its p-value is larger than a general significance level of $\alpha= 0.05$
+
+  - It is interesting to note that when using multiple predictors instead of just hp, the p-value of hp itself is much larger.  
+
+
+**9. Which predictors appears to have a statistically significant relationship to the response.**
+
+  - The previous answer to question 8 summarizes that most predictors are statistically significant, with the exception of "vs". That leaves cyl, disp, hp, wt, and gear as statistically significant predictors.
+  
+**10. Use * symbols to fit linear regression models with interaction effects between hp and wt. Does this interaction appear to be statistically significant?**
+
+```{R}
+LM3<- lm(mpg~cyl + disp + hp*wt + vs + gear, data = mtcars)
+summary(LM3)
+```
+
+  -Yes we can say that the interaction between horsepower and weight are statistically significant because 0.001119 < 0.05 significance level general rule. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,71 @@
+---
+title: "RMarkdown Notebook"
+author: "Alex Aronson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## 1. You can fnd some great rmarkdown resources in Rstudio and you are highly encouraged to keep these resources close to hand. Confrm that you have downloaded these two fles by going:
+   a. Markdown Cheat Sheet: Help > Cheatsheets > R Markdown Cheat Sheet,
+```{r}
+library(pdftools)
+RMarkdown <- pdf_attachments("rmarkdown.pdf") 
+```  
+   b.Markdown Reference Guide: Help > Cheatsheets > R Markdown Reference Guide.
+    -https://www.rstudio.com/wp-content/uploads/2015/03/rmarkdown-reference.pdf  
+    
+    
+## 2. Follow the steps below to insert a code chunk.
+
+   a. There are multiple ways to insert a code chunk. I recommend that you use the keyboard shortcut to insert a code chunk. Do Cmd/Ctrl + Alt + I to insert a code chunk.
+```{r}
+head(iris)
+```
+   b.Inside the above chunk type: head(iris) and run it by clicking the green triangle symbol on the right of the chunk.
+  
+
+## 3. Explain whether each scenario is a classification or regression problem.
+
+   a.collect a set of data on the top 500 firms in the US. For each firm we record profit, number of employees, industry and the CEO salary. We are interested in understanding which factors effect CEO salary.
+  
+  * This would be an example of a linear regression problem because of its a predictors being made up of numerical data.   
+  
+   b.are considering launching a new product and wish to know whether it will be a success or a failure. We collect data on 20 similar products that were previously launched. For each product we have recorded whether it was a success or failure, price charged for the product, marketing budget, competition price, and ten other variables.
+  
+  *  This would be a classification example because we are using predictors to determine a case of success/failure aka a categorical problem.  
+  
+   c.are interested in predicting the % change in the USD/Euro exchange rate in relation to the weekly changes in the world stock markets. Hence we collect weekly data for all of 2012. For each week we record the % change in the USD/Euro, the % change in the US market, the % change in the British market, and the % change in the German market. 
+  
+  * This problem would also be a regression problem because it is continuous in nature over the entire year of 2012, and the data is numeric in nature. 
+  
+## 4. You will now think of some real-life applications for statistical learning.
+
+   a. Describe three real-life applications in which classification might be useful. Describe the response, as well as the predictors.
+  
+  * The first most obvious would be gender of person based on height, weight, testosterone levels. The response would be gender. Predictors are height, weight, testosterone levels. 
+  
+  * Secondly, we could use credit worthiness of a person, based on transaction history, default records, loan amounts, ect. The response is credit worthiness, predictors are default, no default, loan amount, transaction history.
+  
+  * Thirdly we could look at cases of heart disease, based on age, ethnicity, diet, race, ect. The response is heart disease, and the predictors are age, ethnicity, race, diet. 
+  
+  
+  b. Describe three real-life applications in which regression might be useful. Describe the response, as well as the predictors.
+  
+  * Finding the prices of home prices based on the factors of, rooms, sqft, location, neighborhood, interest rates. The response is price, and the predictors are rooms, sqft, location, neighborhood, interest rates, ect. 
+  
+  * Finding the mpg of vehicles based on weight, cylinders, make, model, origin, ect. The response is mpg and the predictors are weight, cylinders, make, model, origin, ect. 
+  
+  * predicting the temperature based on region, elevation, rainfall, days of sunshine, date, past data, ect. The response is temperature and the predictors are region. elevation, rainfall, days of sunshine, date, past, data, ect. 
+  
+## 5. Explain the bias-variance trade-off in your own words.
+
+  * To my understanding, when selecting the bias-variance trade-off, you are trying to choose or find a value in which the bias and variance will intersect and yield the optimal solution ( lowest variance and bias). Since they are inversely proportional, a high bias means choosing a low variance, and a low bias means choosing a high variance. So it is necessary to optimize the two. 
+
+  
+  
+  
+  
+  
+  
+  
+  

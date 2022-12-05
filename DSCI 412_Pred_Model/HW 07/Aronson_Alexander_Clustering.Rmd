@@ -1,0 +1,83 @@
+---
+title: "Clustering"
+author: "Alex Aronson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+
+
+
+```{R}
+library(dplyr)
+library(ggplot2)
+library(factoextra)
+library(cluster)
+```
+
+
+
+
+**1. Loading the Data, and cleaning the Data.**
+
+```{R}
+
+credit<- read.csv("CreditCards.csv")
+head(credit)
+str(credit)
+#credit %>% select(-CUST_ID)----> when running it appears the column to be removed has already been cleaned from set.
+
+# I decided to limit the range to 1000 for the sake of processing time. 
+credit_new<- credit[1:1000,]
+dim(credit_new)
+head(credit_new)
+```
+
+
+
+**2. Performed K-means cluster analysis**
+
+
+```{R}
+
+# Part B
+
+set.seed(1)
+
+fviz_nbclust(credit_new, kmeans, method = "gap_stat")
+
+
+# Part C and D
+
+km.res <- kmeans(credit, 2, nstart = 25)
+fviz_cluster(km.res, data = credit)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

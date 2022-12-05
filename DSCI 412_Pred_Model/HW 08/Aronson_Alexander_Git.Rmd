@@ -1,0 +1,65 @@
+---
+title: "Git"
+author: "Alex Aronson"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+**Week 1**
+
+    1. The first Major thing I learned was how to creat an Rmarkdown file, previous to this course I was not taught how to use Rmarkdown.
+    
+    2. Secondly the Variance-Bias Tradeoff is something new that I learnd in weekone. There has to be a balance between the two or else it causes a skewed model.
+    
+
+**Week 2**
+
+    1. Week 2 furthered my knowledge on visualization and using summary stats to explain data. 
+    
+    2. Transformations is something new that I learned from week two, it may be useful to transform a variable of interest to get better models.
+    
+    
+**Week 3**
+
+    1. Week 3 we toched on linear regression modeling, I have done some of this in the past, however this class went more in depth on the logic behind the test.     
+    
+    2. Linear regression is useful for fitting a best fit line to a bunch of data and making decesions based on that. 
+    
+    
+**Week 4**
+
+    1. Week 4 I learned how to do classification, in which we look at different types of variables and their effects. '
+    
+    2. One way we learned to do this was to used logistic regression instead of linear regression. In addition, weighting precision vs accuracy in the model. 
+    
+
+**Week 5** 
+
+    1. Week 5 we learned about generalized linear models, these can come in several forms and unlike linear regression, can be applied to differing types of data sets.
+    
+    2. The two types of GLM we looked at were Poisson and Gamma, both have advantages and disadvantages depending on the data you're looking at. 
+    
+    
+**Week 6**
+
+    1. Week 6 dealt with decision trees and radom forest, this was new territory for me. Unitl this class I had no knowledge of random fores or trees. 
+    
+    2. These types of regression are nice because they calculate the optimal choice for you and dont require a lot of iterations or modification like normal regression. Random Forest will also show you which variables have the most impact on you model. 
+    
+    
+**Week 7**
+
+    1. Week 7 dealt with k-means clustering, or an unsupervised method aka machine learning. 
+    
+    2. With k-means clustering we are able to visualize the data that may not be structured or cleaned and run analysis on it. one limitation is it can't handle NAs or character type predictors. 
+  
+    
+**Week 8** 
+
+    1. Week 8 was about how to do a presentation using Rmarkdown by changing the output type, and being able to change how the presentation is displayed. 
+    
+    2. In addition we learned how to create a GitHub account and repsotiory, which I had already done in the past top store my other data science class work on as a backup to my computer storage. 
+
+
+    
+    
